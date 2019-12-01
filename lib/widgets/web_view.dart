@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 
+const CATCH_URLS = ['m.ctrip.com/', 'm.ctrip.com/html5/', 'm.ctrip.com/html5'];
+
 class WebView extends StatefulWidget {
   final String url;
   final String statusBarColor;
@@ -15,7 +17,7 @@ class WebView extends StatefulWidget {
       this.statusBarColor,
       this.title,
       this.hideAppBar,
-      this.backForbid});
+      this.backForbid = false});
 
   @override
   _WebViewState createState() => _WebViewState();
@@ -27,6 +29,7 @@ class _WebViewState extends State<WebView> {
   StreamSubscription<String> _onUrlChanged;
   StreamSubscription<WebViewStateChanged> _onStateChanged;
   StreamSubscription<WebViewHttpError> _onError;
+  bool exiting = false;
 
   @override
   void initState() {
@@ -37,6 +40,14 @@ class _WebViewState extends State<WebView> {
         webviewReference.onStateChanged.listen((WebViewStateChanged state) {
       switch (state.type) {
         case WebViewState.startLoad:
+          if (_isToMain(state.url) && !exiting) {
+            if (widget.backForbid ?? false) {
+              webviewReference.launch(widget.url);
+            } else {
+              Navigator.pop(context);
+              exiting = true;
+            }
+          }
           break;
         default:
           break;
@@ -45,6 +56,18 @@ class _WebViewState extends State<WebView> {
     _onError = webviewReference.onHttpError.listen((WebViewHttpError error) {
       print(error);
     });
+  }
+
+  ///判断是否返回携程的页面
+  _isToMain(String url) {
+    bool contain = false;
+    for (var value in CATCH_URLS) {
+      if (url?.endsWith(value) ?? false) {
+        contain = true;
+        break;
+      }
+    }
+    return contain;
   }
 
   @override
@@ -74,7 +97,7 @@ class _WebViewState extends State<WebView> {
             hidden: true,
             initialChild: Container(
               color: Colors.white,
-              child: Center(child: Text('Waiting...')),
+              child: Center(child: CircularProgressIndicator()),
             ),
           )),
         ],
@@ -90,16 +113,19 @@ class _WebViewState extends State<WebView> {
       );
     }
     return Container(
+      padding: EdgeInsets.fromLTRB(0, 40, 0, 10),
+      color: backgroundColor,
       child: FractionallySizedBox(
         widthFactor: 1,
         child: Stack(
           children: <Widget>[
             GestureDetector(
+              onTap: () => Navigator.pop(context),
               child: Container(
                 margin: EdgeInsets.only(left: 10),
                 child: Icon(
                   Icons.close,
-                  color: backgroundColor,
+                  color: backButtonColor,
                   size: 26,
                 ),
               ),

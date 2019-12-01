@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_trip/model/common_model.dart';
+import 'package:flutter_trip/widgets/web_view.dart';
 
 class LocalNav extends StatelessWidget {
   final List<CommonModel> list;
@@ -12,9 +13,9 @@ class LocalNav extends StatelessWidget {
       height: 64,
       decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(6))),
+          borderRadius: BorderRadius.all(Radius.circular(10))),
       child: Padding(
-        padding: EdgeInsets.all(7),
+        padding: EdgeInsets.symmetric(horizontal: 10,vertical: 5),
         child: _items(context),
       ),
     );
@@ -37,7 +38,12 @@ class LocalNav extends StatelessWidget {
   Widget _item(BuildContext context, CommonModel model) {
     return GestureDetector(
       onTap: () {
-
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => WebView(
+                  url: model.url,
+                  statusBarColor: model.statusBarColor,
+                  hideAppBar: model.hideAppBar,
+                )));
       },
       child: Column(
         children: <Widget>[

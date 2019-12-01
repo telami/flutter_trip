@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:flutter_trip/api/home_api.dart';
 import 'package:flutter_trip/model/common_model.dart';
+import 'package:flutter_trip/model/grid_nav_model.dart';
 import 'package:flutter_trip/model/home_model.dart';
+import 'package:flutter_trip/widgets/grid_nav.dart';
 import 'package:flutter_trip/widgets/local_nav.dart';
 
 const APPBAR_SCROLL_OFFSET = 100;
@@ -24,6 +26,8 @@ class _HomePageState extends State<HomePage> {
   double appBarAlpha = 0;
 
   List<CommonModel> localNavList;
+
+  GridNavModel gridNav;
 
   @override
   Widget build(BuildContext context) {
@@ -57,9 +61,15 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(7, 4, 7, 4),
+                        padding: EdgeInsets.fromLTRB(7, 4, 7, 4),
                         child: LocalNav(
                           list: localNavList,
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(7, 0, 7, 4),
+                        child: GridNavWidget(
+                          gridNav: gridNav,
                         ),
                       )
                     ],
@@ -91,6 +101,7 @@ class _HomePageState extends State<HomePage> {
     HomeModel home = await HomeApi.fetch();
     setState(() {
       localNavList = home.localNavList;
+      gridNav = home.gridNav;
     });
   }
 
