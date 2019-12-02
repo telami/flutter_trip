@@ -6,8 +6,11 @@ import 'package:flutter_trip/api/home_api.dart';
 import 'package:flutter_trip/model/common_model.dart';
 import 'package:flutter_trip/model/grid_nav_model.dart';
 import 'package:flutter_trip/model/home_model.dart';
+import 'package:flutter_trip/model/sales_box_model.dart';
 import 'package:flutter_trip/widgets/grid_nav.dart';
 import 'package:flutter_trip/widgets/local_nav.dart';
+import 'package:flutter_trip/widgets/sales_box.dart';
+import 'package:flutter_trip/widgets/sub_nav.dart';
 
 const APPBAR_SCROLL_OFFSET = 100;
 
@@ -28,6 +31,10 @@ class _HomePageState extends State<HomePage> {
   List<CommonModel> localNavList;
 
   GridNavModel gridNav;
+
+  List<CommonModel> subNavList;
+
+  SalesBoxModel salesBox;
 
   @override
   Widget build(BuildContext context) {
@@ -71,6 +78,18 @@ class _HomePageState extends State<HomePage> {
                         child: GridNavWidget(
                           gridNav: gridNav,
                         ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(7, 0, 7, 4),
+                        child: SubNav(
+                          list: subNavList,
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(7, 0, 7, 4),
+                        child: SalesBox(
+                          salesBox: salesBox,
+                        ),
                       )
                     ],
                   ),
@@ -102,6 +121,8 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       localNavList = home.localNavList;
       gridNav = home.gridNav;
+      subNavList = home.subNavList;
+      salesBox = home.salesBox;
     });
   }
 
