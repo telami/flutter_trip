@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:flutter_trip/api/home_api.dart';
@@ -11,10 +9,12 @@ import 'package:flutter_trip/widgets/grid_nav.dart';
 import 'package:flutter_trip/widgets/loading_container.dart';
 import 'package:flutter_trip/widgets/local_nav.dart';
 import 'package:flutter_trip/widgets/sales_box.dart';
+import 'package:flutter_trip/widgets/search_bar.dart';
 import 'package:flutter_trip/widgets/sub_nav.dart';
 import 'package:flutter_trip/widgets/web_view.dart';
 
 const APPBAR_SCROLL_OFFSET = 100;
+const SEARCH_BAR_DEFAULT_TEXT = '网红打卡地 景点 酒店 美食';
 
 class HomePage extends StatefulWidget {
   @override
@@ -50,78 +50,17 @@ class _HomePageState extends State<HomePage> {
                     child: RefreshIndicator(
                       onRefresh: _handleRefresh,
                       child: NotificationListener(
-                        // ignore: missing_return
-                        onNotification: (scrollNotification) {
-                          if (scrollNotification is ScrollUpdateNotification &&
-                              scrollNotification.depth == 0) {
-                            _onScroll(scrollNotification.metrics.pixels);
-                          }
-                        },
-                        child: ListView(
-                          children: <Widget>[
-                            Container(
-                              height: 160,
-                              child: Swiper(
-                                itemCount: bannerList.length,
-                                autoplay: true,
-                                itemBuilder: (BuildContext context, int index) {
-                                  var banner = bannerList[index];
-                                  return GestureDetector(
-                                    onTap: () {
-                                      Navigator.of(context).push(MaterialPageRoute(
-                                          builder: (context) => WebView(
-                                            url: banner.url,
-                                            statusBarColor: banner.statusBarColor,
-                                            hideAppBar: banner.hideAppBar,
-                                          )));
-                                    },
-                                    child: Image.network(banner.icon,
-                                        fit: BoxFit.fill),
-                                  );
-                                },
-                                pagination: SwiperPagination(),
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.fromLTRB(7, 4, 7, 4),
-                              child: LocalNav(
-                                list: localNavList,
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.fromLTRB(7, 0, 7, 4),
-                              child: GridNavWidget(
-                                gridNav: gridNav,
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.fromLTRB(7, 0, 7, 4),
-                              child: SubNav(
-                                list: subNavList,
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.fromLTRB(7, 0, 7, 4),
-                              child: SalesBox(
-                                salesBox: salesBox,
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
+                          // ignore: missing_return
+                          onNotification: (scrollNotification) {
+                            if (scrollNotification
+                                    is ScrollUpdateNotification &&
+                                scrollNotification.depth == 0) {
+                              _onScroll(scrollNotification.metrics.pixels);
+                            }
+                          },
+                          child: _listView()),
                     )),
-                Opacity(
-                    opacity: appBarAlpha,
-                    child: Container(
-                      height: 80,
-                      decoration: BoxDecoration(color: Colors.white),
-                      child: Center(
-                        child: Padding(
-                          padding: EdgeInsets.only(top: 20),
-                          child: Text('首页'),
-                        ),
-                      ),
-                    )),
+                _appBar(),
               ],
             )));
   }
@@ -163,4 +102,97 @@ class _HomePageState extends State<HomePage> {
       appBarAlpha = alpha;
     });
   }
+
+  _listView() {
+    return ListView(
+      children: <Widget>[
+        Container(
+          height: 160,
+          child: Swiper(
+            itemCount: bannerList.length,
+            autoplay: true,
+            itemBuilder: (BuildContext context, int index) {
+              var banner = bannerList[index];
+              return GestureDetector(
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => WebView(
+                            url: banner.url,
+                            statusBarColor: banner.statusBarColor,
+                            hideAppBar: banner.hideAppBar,
+                          )));
+                },
+                child: Image.network(banner.icon, fit: BoxFit.fill),
+              );
+            },
+            pagination: SwiperPagination(),
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.fromLTRB(7, 4, 7, 4),
+          child: LocalNav(
+            list: localNavList,
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.fromLTRB(7, 0, 7, 4),
+          child: GridNavWidget(
+            gridNav: gridNav,
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.fromLTRB(7, 0, 7, 4),
+          child: SubNav(
+            list: subNavList,
+          ),
+        ),
+        Padding(
+          padding: EdgeInsets.fromLTRB(7, 0, 7, 4),
+          child: SalesBox(
+            salesBox: salesBox,
+          ),
+        )
+      ],
+    );
+  }
+
+  _appBar() {
+    return Column(
+      children: <Widget>[
+        Container(
+          decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  colors: [Color(0x66000000), Colors.transparent],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter)),
+          child: Container(
+            padding: EdgeInsets.only(top: 20),
+            height: 80,
+            decoration: BoxDecoration(
+                color:
+                    Color.fromARGB((appBarAlpha * 255).toInt(), 255, 255, 255)),
+            child: SearchBar(
+              searchBarType: appBarAlpha > 0.2
+                  ? SearchBarType.homeLight
+                  : SearchBarType.home,
+//              hideLeft: true,
+              inputBoxClick: _jumpToSearch,
+              speakClick: _jumpToSpeak,
+              defaultText: SEARCH_BAR_DEFAULT_TEXT,
+              leftButtonClick: () {},
+            ),
+          ),
+        ),
+        Container(
+          height: appBarAlpha > 0.2 ? 0.5 : 0,
+          decoration: BoxDecoration(
+              boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 0.5)]),
+        )
+      ],
+    );
+  }
+
+  _jumpToSearch() {}
+
+  void _jumpToSpeak() {}
 }

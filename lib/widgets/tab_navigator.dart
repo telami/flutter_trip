@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_trip/pages/explore_page.dart';
 import 'package:flutter_trip/pages/home_page.dart';
 import 'package:flutter_trip/pages/message_page.dart';
 import 'package:flutter_trip/pages/my_page.dart';
+import 'package:flutter_trip/pages/search_page.dart';
 
 //底部导航框架
 class TabNavigator extends StatefulWidget {
@@ -22,7 +22,7 @@ class _TabNavigatorState extends State<TabNavigator> {
     return Scaffold(
       body: PageView(
         controller: _controller,
-        children: <Widget>[HomePage(), ExplorePage(), MessagePage(), MyPage()],
+        children: <Widget>[HomePage(), SearchPage(), MessagePage(), MyPage()],
       ),
       bottomNavigationBar: BottomNavigationBar(
           unselectedFontSize: 14,
@@ -36,8 +36,8 @@ class _TabNavigatorState extends State<TabNavigator> {
           },
           items: [
             _bottomItem('首页', Icons.home, 0),
-            _bottomItem('发现', Icons.explore, 1),
-            _bottomItem('搜索', Icons.search, 2),
+            _bottomItem('发现', Icons.search, 1),
+            _bottomItem('搜索', Icons.camera_alt, 2),
             _bottomItem('我的', Icons.person, 3),
           ]),
     );
