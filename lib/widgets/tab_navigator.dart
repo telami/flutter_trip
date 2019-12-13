@@ -22,7 +22,12 @@ class _TabNavigatorState extends State<TabNavigator> {
     return Scaffold(
       body: PageView(
         controller: _controller,
-        children: <Widget>[HomePage(), SearchPage(), MessagePage(), MyPage()],
+        children: <Widget>[
+          HomePage(),
+          SearchPage(hideLeft: true),
+          MessagePage(),
+          MyPage()
+        ],
       ),
       bottomNavigationBar: BottomNavigationBar(
           unselectedFontSize: 14,
